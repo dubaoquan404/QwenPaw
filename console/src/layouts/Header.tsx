@@ -151,7 +151,7 @@ export default function Header() {
     <>
       <AntHeader className={styles.header}>
         <div className={styles.logoWrapper}>
-          <span className={styles.logoText}>医保智能体管理平台</span>
+          <span className={styles.logoText}>智能体管理平台</span>
           <div className={styles.logoDivider} />
           {version && (
             <Badge

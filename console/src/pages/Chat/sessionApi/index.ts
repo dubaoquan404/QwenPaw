@@ -577,7 +577,7 @@ class SessionApi implements IAgentScopeRuntimeWebUISessionAPI {
 
     this.sessionListRequest = (async () => {
       try {
-        const chats = await api.listChats();
+        const chats = await api.listChats({ user_id: DEFAULT_USER_ID });
         return this.applyChatsToSessionList(chats);
       } finally {
         this.sessionListRequest = null;
