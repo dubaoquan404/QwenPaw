@@ -10,17 +10,23 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import zhCN from "antd/locale/zh_CN";
 import enUS from "antd/locale/en_US";
+<<<<<<< Updated upstream
 import jaJP from "antd/locale/ja_JP";
 import ruRU from "antd/locale/ru_RU";
 import idID from "antd/locale/id_ID";
+=======
+>>>>>>> Stashed changes
 import type { Locale } from "antd/es/locale";
 import { theme as antdTheme } from "antd";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/zh-cn";
+<<<<<<< Updated upstream
 import "dayjs/locale/ja";
 import "dayjs/locale/ru";
 import "dayjs/locale/id";
+=======
+>>>>>>> Stashed changes
 dayjs.extend(relativeTime);
 import MainLayout from "./layouts/MainLayout";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
@@ -30,6 +36,7 @@ import { Suspense } from "react";
 import { lazyImportWithRetry } from "./utils/lazyWithRetry";
 
 const LoginPage = lazyImportWithRetry("./pages/Login/index");
+const EmbedChatPage = lazyImportWithRetry("./pages/EmbedChat/index");
 import { authApi } from "./api/modules/auth";
 import { languageApi } from "./api/modules/language";
 import { getApiUrl, getApiToken, clearAuthToken } from "./api/config";
@@ -39,17 +46,23 @@ import "./styles/form-override.css";
 const antdLocaleMap: Record<string, Locale> = {
   zh: zhCN,
   en: enUS,
+<<<<<<< Updated upstream
   ja: jaJP,
   ru: ruRU,
   id: idID,
+=======
+>>>>>>> Stashed changes
 };
 
 const dayjsLocaleMap: Record<string, string> = {
   zh: "zh-cn",
   en: "en",
+<<<<<<< Updated upstream
   ja: "ja",
   ru: "ru",
   id: "id",
+=======
+>>>>>>> Stashed changes
 };
 
 const GlobalStyle = createGlobalStyle`
@@ -194,6 +207,15 @@ function AppInner() {
                 element={
                   <Suspense fallback={null}>
                     <LoginPage />
+                  </Suspense>
+                }
+              />
+              {/* Embed route — standalone page, has its own token-based auth */}
+              <Route
+                path="/embed/chat"
+                element={
+                  <Suspense fallback={null}>
+                    <EmbedChatPage />
                   </Suspense>
                 }
               />

@@ -26,7 +26,6 @@ interface RuleTableProps {
   rules: MergedRule[];
   enabled: boolean;
   onToggleRule: (ruleId: string, currentlyDisabled: boolean) => void;
-  onToggleAutoDeny: (ruleId: string, currentlyAutoDeny: boolean) => void;
   onPreviewRule: (rule: MergedRule) => void;
   onEditRule: (rule: MergedRule) => void;
   onDeleteRule: (ruleId: string) => void;
@@ -50,7 +49,6 @@ export function RuleTable({
   rules,
   enabled,
   onToggleRule,
-  onToggleAutoDeny,
   onPreviewRule,
   onEditRule,
   onDeleteRule,
@@ -125,31 +123,6 @@ export function RuleTable({
             ? t("security.rules.builtin")
             : t("security.rules.custom")}
         </Tag>
-      ),
-    },
-    {
-      title: (
-        <Tooltip title={t("security.rules.autoDenyTooltip")}>
-          <span>{t("security.rules.autoDeny")}</span>
-        </Tooltip>
-      ),
-      key: "autoDeny",
-      width: 100,
-      render: (_: unknown, record: MergedRule) => (
-        <Tooltip
-          title={
-            record.autoDeny
-              ? t("security.rules.autoDenyDisable")
-              : t("security.rules.autoDenyEnable")
-          }
-        >
-          <Switch
-            size="small"
-            checked={record.autoDeny}
-            onChange={() => onToggleAutoDeny(record.id, record.autoDeny)}
-            disabled={!enabled || record.disabled}
-          />
-        </Tooltip>
       ),
     },
     {

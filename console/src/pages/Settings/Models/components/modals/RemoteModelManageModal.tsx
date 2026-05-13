@@ -635,7 +635,7 @@ export function RemoteModelManageModal({
           <div className={styles.modelListEmpty}>{t("models.noModels")}</div>
         ) : (
           filteredModels.map((m) => {
-            const isDeletable = provider.is_custom || extraModelIds.has(m.id);
+            const isDeletable = true;
             const isConfigOpen = configOpenModelId === m.id;
             return (
               <div key={m.id}>

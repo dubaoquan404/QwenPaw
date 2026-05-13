@@ -9,6 +9,7 @@ import {
   HeaderActions,
   SkillsToolbar,
   SkillListItem,
+  UploadSkillCard,
 } from "./components";
 import { PageHeader } from "@/components/PageHeader";
 import { useSkillsPage } from "./useSkillsPage";
@@ -33,7 +34,6 @@ function SkillsPage() {
     setImportModalOpen,
     editingSkill,
     form,
-    fileInputRef,
     poolModal,
     setPoolModal,
     selectedSkills,
@@ -57,8 +57,7 @@ function SkillsPage() {
     handleBatchEnable,
     handleBatchDisable,
     handleBatchDelete,
-    handleUploadClick,
-    handleFileChange,
+    handleUploadFile,
     handleConfirmImport,
     closeImportModal,
     closePoolModal,
@@ -81,8 +80,6 @@ function SkillsPage() {
             batchModeEnabled={batchModeEnabled}
             selectedSkills={selectedSkills}
             loading={loading}
-            uploading={uploading}
-            fileInputRef={fileInputRef}
             onSelectAll={selectAll}
             onClearSelection={clearSelection}
             onUploadToPool={handleUploadToPool}
@@ -93,10 +90,8 @@ function SkillsPage() {
             onHardRefresh={hardRefresh}
             onOpenDownloadPool={() => setPoolModal("download")}
             onOpenUploadPool={() => setPoolModal("upload")}
-            onUploadClick={handleUploadClick}
             onImportHub={() => setImportModalOpen(true)}
             onCreate={handleCreate}
-            onFileChange={handleFileChange}
           />
         }
       />
@@ -157,6 +152,12 @@ function SkillsPage() {
         </div>
       ) : viewMode === "card" ? (
         <div className={styles.skillsGrid}>
+          {!batchModeEnabled && (
+            <UploadSkillCard
+              uploading={uploading}
+              onFileSelect={handleUploadFile}
+            />
+          )}
           {visibleSkills.map((skill) => (
             <SkillCard
               key={skill.name}

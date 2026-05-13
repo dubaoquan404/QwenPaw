@@ -7,7 +7,6 @@ import {
   PlusOutlined,
   ReloadOutlined,
   SwapOutlined,
-  UploadOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
@@ -18,8 +17,6 @@ interface HeaderActionsProps {
   batchModeEnabled: boolean;
   selectedSkills: Set<string>;
   loading: boolean;
-  uploading: boolean;
-  fileInputRef: React.RefObject<HTMLInputElement>;
   onSelectAll: () => void;
   onClearSelection: () => void;
   onUploadToPool: (names: string[]) => void;
@@ -30,18 +27,14 @@ interface HeaderActionsProps {
   onHardRefresh: () => void;
   onOpenDownloadPool: () => void;
   onOpenUploadPool: () => void;
-  onUploadClick: () => void;
   onImportHub: () => void;
   onCreate: () => void;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function HeaderActions({
   batchModeEnabled,
   selectedSkills,
   loading,
-  uploading,
-  fileInputRef,
   onSelectAll,
   onClearSelection,
   onUploadToPool,
@@ -52,22 +45,13 @@ export function HeaderActions({
   onHardRefresh,
   onOpenDownloadPool,
   onOpenUploadPool,
-  onUploadClick,
   onImportHub,
   onCreate,
-  onFileChange,
 }: HeaderActionsProps) {
   const { t } = useTranslation();
 
   return (
     <div className={styles.headerRight}>
-      <input
-        type="file"
-        accept=".zip"
-        ref={fileInputRef}
-        onChange={onFileChange}
-        style={{ display: "none" }}
-      />
       {batchModeEnabled ? (
         <div className={styles.batchActions}>
           <>
@@ -154,18 +138,6 @@ export function HeaderActions({
             </Tooltip>
           </div>
           <div className={styles.headerActionsRight}>
-            <Tooltip title={t("skills.uploadZipHint")}>
-              <Button
-                type="default"
-                className={styles.creationActionButton}
-                onClick={onUploadClick}
-                icon={<UploadOutlined />}
-                loading={uploading}
-                disabled={uploading}
-              >
-                {t("skills.uploadZip")}
-              </Button>
-            </Tooltip>
             <Tooltip title={t("skills.importHubHint")}>
               <Button
                 type="default"

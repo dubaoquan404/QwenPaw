@@ -179,11 +179,6 @@ export default function AgentSelector({
                       <Tag style={{ margin: 0 }}>{t("agent.disabled")}</Tag>
                     )}
                   </div>
-                  {agent.description && (
-                    <div className={styles.agentOptionDescription}>
-                      {agent.description}
-                    </div>
-                  )}
                 </div>
               </div>
               <div className={styles.agentOptionId}>ID: {agent.id}</div>

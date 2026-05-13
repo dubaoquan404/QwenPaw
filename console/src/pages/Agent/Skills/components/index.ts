@@ -1,4 +1,5 @@
 export { SkillCard } from "./SkillCard";
+export { UploadSkillCard } from "./UploadSkillCard";
 export {
   SkillDrawer,
   parseFrontmatter,

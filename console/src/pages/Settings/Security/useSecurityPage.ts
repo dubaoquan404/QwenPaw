@@ -76,7 +76,6 @@ export function useSecurityPage() {
     error,
     fetchAll,
     toggleRule,
-    toggleAutoDeny,
     deleteCustomRule,
     addCustomRule,
     updateCustomRule,
@@ -103,7 +102,6 @@ export function useSecurityPage() {
         denied_tools: values.denied_tools ?? [],
         custom_rules: customRules,
         disabled_rules: Array.from(savedBody.disabled_rules),
-        auto_denied_rules: savedBody.auto_denied_rules,
         shell_evasion_checks: savedBody.shell_evasion_checks,
       };
       await api.updateToolGuard(body);
@@ -230,7 +228,6 @@ export function useSecurityPage() {
     builtinRules,
     customRules,
     toggleRule,
-    toggleAutoDeny,
     deleteCustomRule,
     openAddRule,
     openEditRule,

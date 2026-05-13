@@ -16,7 +16,6 @@ import {
   isStableVersion,
   compareVersions,
 } from "./constants";
-import { useTheme } from "../contexts/ThemeContext";
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -51,7 +50,6 @@ function UpdateCodeBlock({ code }: { code: string }) {
 
 export default function Header() {
   const { t, i18n } = useTranslation();
-  const { isDark } = useTheme();
   const [version, setVersion] = useState<string>("");
   const [latestVersion, setLatestVersion] = useState<string>("");
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
@@ -153,11 +151,7 @@ export default function Header() {
     <>
       <AntHeader className={styles.header}>
         <div className={styles.logoWrapper}>
-          <img
-            src={isDark ? "/logo-dark.svg" : "/logo-light.svg"}
-            alt="QwenPaw"
-            className={styles.logoImg}
-          />
+          <span className={styles.logoText}>医保智能体管理平台</span>
           <div className={styles.logoDivider} />
           {version && (
             <Badge
@@ -179,7 +173,7 @@ export default function Header() {
           )}
         </div>
         <Space size="middle">
-          <Tooltip title={t("header.changelog")}>
+          {/* <Tooltip title={t("header.changelog")}>
             <Button
               type="text"
               onClick={() => handleNavClick(getReleaseNotesUrl(i18n.language))}
@@ -207,8 +201,8 @@ export default function Header() {
             <Button type="text" onClick={() => handleNavClick(GITHUB_URL)}>
               {t("header.github")}
             </Button>
-          </Tooltip>
-          <div className={styles.headerDivider} />
+          </Tooltip> 
+          <div className={styles.headerDivider} />*/}
           <LanguageSwitcher />
           <ThemeToggleButton />
         </Space>

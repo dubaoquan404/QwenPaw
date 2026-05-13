@@ -25,7 +25,7 @@ export function useAgentConfig() {
   const [savingTimezone, setSavingTimezone] = useState(false);
   const [approvalLevel, setApprovalLevel] =
     useState<ToolExecutionLevel>("AUTO");
-  const originalConfigRef = useRef<AgentsRunningConfig | null>(null);
+  const initialApprovalLevelRef = useRef<ToolExecutionLevel>("AUTO");
 
   const fetchConfig = useCallback(async () => {
     setLoading(true);
@@ -40,6 +40,7 @@ export function useAgentConfig() {
         config.approval_level || "AUTO"
       ).toUpperCase() as ToolExecutionLevel;
       setApprovalLevel(loadedLevel);
+      initialApprovalLevelRef.current = loadedLevel;
       const contextBackend =
         config.context_manager_backend in CONTEXT_MANAGER_BACKEND_MAPPINGS
           ? config.context_manager_backend
@@ -74,10 +75,6 @@ export function useAgentConfig() {
           timeout_seconds: 30.0,
         },
       });
-
-      // Store original config for complete save
-      originalConfigRef.current = config;
-
       setLanguage(langResp.language);
       setTimezone(tzResp.timezone || "UTC");
     } catch (err) {
@@ -97,18 +94,12 @@ export function useAgentConfig() {
     try {
       const values = await form.validateFields();
       setSaving(true);
-
-      // Merge form values with original config to ensure complete config
       const configToSave: AgentsRunningConfig = {
-        ...originalConfigRef.current!,
         ...(values as AgentsRunningConfig),
         approval_level: approvalLevel,
       };
-
       await api.updateAgentRunningConfig(configToSave);
-
-      // Update original config after successful save
-      originalConfigRef.current = configToSave;
+      initialApprovalLevelRef.current = approvalLevel;
       message.success(t("agentConfig.saveSuccess"));
     } catch (err) {
       if (err instanceof Error && "errorFields" in err) return;

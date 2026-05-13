@@ -20,6 +20,9 @@ from fastapi import APIRouter, Body, HTTPException, UploadFile, File, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+import json
+import logging
+
 from ..utils import schedule_agent_reload
 from ...config import (
     load_config,
@@ -28,6 +31,8 @@ from ...config import (
 )
 from ...config.config import load_agent_config, save_agent_config
 from ...agents.memory.agent_md_manager import AgentMdManager
+
+logger = logging.getLogger(__name__)
 from ...agents.templates import get_workspace_md_template_id
 from ...agents.utils import copy_workspace_md_files
 from ...constant import BUILTIN_QA_AGENT_ID, SUPPORTED_AGENT_LANGUAGES
@@ -649,6 +654,132 @@ async def put_system_prompt_files(
     schedule_agent_reload(request, workspace.agent_id)
 
     return files
+
+
+# ---------------------------------------------------------------------------
+# AI-assisted workspace file generation (no chat history)
+# ---------------------------------------------------------------------------
+
+
+class AiGenRequest(BaseModel):
+    """Request body for AI-assisted file content generation."""
+
+    file_name: str = Field(..., description="Name of the file to generate")
+    file_content: str = Field(
+        default="", description="Current file content (may be empty)"
+    )
+    instruction: str = Field(
+        default="", description="Extra instructions from the user"
+    )
+
+
+@router.post(
+    "/ai-gen",
+    summary="AI-generate workspace file content (streaming)",
+    description=(
+        "Use the active agent's LLM to generate or improve a workspace file. "
+        "Returns a streaming SSE response with text deltas. "
+        "Does NOT create a chat history entry."
+    ),
+)
+async def post_workspace_ai_gen(
+    body: AiGenRequest,
+    request: Request,
+) -> StreamingResponse:
+    """Stream AI-generated content for a workspace file."""
+    workspace = await get_agent_for_request(request)
+
+    async def generate():
+        try:
+            from ...agents.model_factory import create_model_and_formatter
+            from agentscope_runtime.engine.schemas.exception import (
+                AppBaseException,
+            )
+
+            try:
+                model, _ = create_model_and_formatter(
+                    agent_id=workspace.agent_id,
+                )
+            except (ValueError, AppBaseException) as exc:
+                error_msg = json.dumps(
+                    {"error": f"No AI model configured: {exc}"},
+                    ensure_ascii=False,
+                )
+                yield f"data: {error_msg}\n\n"
+                return
+
+            prompt_parts = [
+                f'请根据以下信息，为文件 "{body.file_name}" 生成或改进内容。',
+            ]
+            if body.file_content:
+                prompt_parts.append(
+                    f"\n\n当前文件内容：\n```\n{body.file_content}\n```"
+                )
+            if body.instruction:
+                prompt_parts.append(f"\n\n补充说明：{body.instruction}")
+            prompt_parts.append(
+                "\n\n请直接输出文件内容，无需额外解释，不要包裹在代码块中。"
+            )
+            user_prompt = "".join(prompt_parts)
+
+            messages = [
+                {"role": "user", "content": user_prompt},
+            ]
+
+            response = await model(messages)
+            accumulated = ""
+
+            if hasattr(response, "__aiter__"):
+                async for chunk in response:
+                    text = ""
+                    if hasattr(chunk, "content"):
+                        if isinstance(chunk.content, str):
+                            text = chunk.content
+                        elif isinstance(chunk.content, list):
+                            for item in chunk.content:
+                                if (
+                                    isinstance(item, dict)
+                                    and "text" in item
+                                ):
+                                    text = item["text"]
+                                    break
+                    if text and len(text) > len(accumulated):
+                        delta = text[len(accumulated):]
+                        accumulated = text
+                        data = json.dumps(
+                            {"text": delta}, ensure_ascii=False
+                        )
+                        yield f"data: {data}\n\n"
+            else:
+                if hasattr(response, "text"):
+                    text = response.text
+                elif isinstance(response, str):
+                    text = response
+                else:
+                    text = ""
+                if text:
+                    data = json.dumps({"text": text}, ensure_ascii=False)
+                    yield f"data: {data}\n\n"
+
+            yield f"data: {json.dumps({'done': True})}\n\n"
+
+        except Exception as exc:
+            logger.exception("AI workspace file generation failed: %s", exc)
+            error_msg = json.dumps(
+                {"error": f"Generation failed: {exc}"},
+                ensure_ascii=False,
+            )
+            yield f"data: {error_msg}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 # ---------------------------------------------------------------------------

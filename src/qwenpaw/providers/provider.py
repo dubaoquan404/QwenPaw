@@ -196,6 +196,11 @@ class Provider(ProviderInfo, ABC):
             for model in self.extra_models
             if model.id.strip() != model_id
         ]
+        self.models = [
+            model
+            for model in self.models
+            if model.id.strip() != model_id
+        ]
         return True, ""
 
     def update_config(self, config: Dict) -> None:

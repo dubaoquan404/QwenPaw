@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "../../../../api";
 
-export interface ChannelQrcodeConfig {
+interface ChannelQrcodeConfig {
   /** Channel name used in the API path, e.g. "wechat" or "wecom" */
   channel: string;
   /** Status value that indicates successful authorization */
@@ -12,11 +12,13 @@ export interface ChannelQrcodeConfig {
   pollInterval?: number;
   /** Called when authorization succeeds with the credentials map */
   onSuccess: (credentials: Record<string, string>) => void;
-  /** Called when QR code fetch fails or polling detects expiry */
+  /** Called when the QR code expires (optional) */
+  onExpired?: () => void;
+  /** Called when QR code fetch or polling fails */
   onError: (type: "fetch" | "expired") => void;
 }
 
-export interface ChannelQrcodeState {
+interface ChannelQrcodeState {
   qrcodeImg: string;
   loading: boolean;
   fetchQrcode: () => Promise<void>;
@@ -39,6 +41,7 @@ export function useChannelQrcode(
     successCredentialKey,
     pollInterval = 2000,
     onSuccess,
+    onExpired,
     onError,
   } = config;
 
@@ -90,6 +93,7 @@ export function useChannelQrcode(
               return;
             } else if (result.status === "expired") {
               setQrcodeImg("");
+              onExpired?.();
               onError("expired");
               return;
             }
@@ -112,6 +116,7 @@ export function useChannelQrcode(
     successCredentialKey,
     pollInterval,
     onSuccess,
+    onExpired,
     onError,
     reset,
     stopPoll,

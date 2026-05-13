@@ -3,10 +3,7 @@ import type { KeyboardEvent, ReactNode, UIEvent } from "react";
 import { Form, Input, Modal, Button, Select } from "@agentscope-ai/design";
 import { useAppMessage } from "../../../../../hooks/useAppMessage";
 import { ApiOutlined, DownOutlined, RightOutlined } from "@ant-design/icons";
-import type {
-  BaseUrlOption,
-  ProviderConfigRequest,
-} from "../../../../../api/types";
+import type { ProviderConfigRequest } from "../../../../../api/types";
 import api from "../../../../../api";
 import { useTranslation } from "react-i18next";
 import { getLocalizedTestConnectionMessage } from "./testConnectionMessage";
@@ -251,7 +248,6 @@ interface ProviderConfigModalProps {
     chat_model: string;
     support_connection_check: boolean;
     generate_kwargs: Record<string, unknown>;
-    meta?: Record<string, unknown>;
   };
   activeModels: any;
   open: boolean;
@@ -275,24 +271,6 @@ export function ProviderConfigModal({
   const { message } = useAppMessage();
   const selectedChatModel = Form.useWatch("chat_model", form);
   const canEditBaseUrl = !provider.freeze_url;
-
-  const baseUrlOptions = useMemo<BaseUrlOption[]>(() => {
-    const raw = provider.meta?.base_url_options;
-    if (!Array.isArray(raw)) return [];
-    return raw.flatMap((item) => {
-      if (
-        item &&
-        typeof item === "object" &&
-        typeof (item as BaseUrlOption).label === "string" &&
-        typeof (item as BaseUrlOption).value === "string"
-      ) {
-        return [item as BaseUrlOption];
-      }
-      return [];
-    });
-  }, [provider.meta]);
-
-  const useBaseUrlSelect = canEditBaseUrl && baseUrlOptions.length > 0;
 
   const parseGenerateConfig = (value?: string) => {
     const trimmed = value?.trim();
@@ -335,9 +313,6 @@ export function ProviderConfigModal({
     if (!canEditBaseUrl) {
       return undefined;
     }
-    if (useBaseUrlSelect) {
-      return t("models.selectBaseURLHint");
-    }
     if (provider.id === "azure-openai") {
       return t("models.azureEndpointHint");
     }
@@ -362,14 +337,7 @@ export function ProviderConfigModal({
         : t("models.openAICompatibleEndpoint");
     }
     return t("models.apiEndpointHint");
-  }, [
-    canEditBaseUrl,
-    useBaseUrlSelect,
-    provider.id,
-    provider.is_custom,
-    effectiveChatModel,
-    t,
-  ]);
+  }, [canEditBaseUrl, provider.id, provider.is_custom, effectiveChatModel, t]);
 
   const baseUrlPlaceholder = useMemo(() => {
     if (!canEditBaseUrl) {
@@ -650,20 +618,7 @@ export function ProviderConfigModal({
           }
           extra={baseUrlExtra}
         >
-          {useBaseUrlSelect ? (
-            <Select
-              options={baseUrlOptions.map((option) => ({
-                label: `${option.label} — ${option.value}`,
-                value: option.value,
-              }))}
-              placeholder={t("models.selectBaseURL")}
-            />
-          ) : (
-            <Input
-              placeholder={baseUrlPlaceholder}
-              disabled={!canEditBaseUrl}
-            />
-          )}
+          <Input placeholder={baseUrlPlaceholder} disabled={!canEditBaseUrl} />
         </Form.Item>
 
         {/* API Key */}

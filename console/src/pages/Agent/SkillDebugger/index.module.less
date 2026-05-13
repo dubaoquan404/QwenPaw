@@ -1,0 +1,335 @@
+.debuggerPage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.debuggerContainer {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid var(--qwenpaw-color-border, #e8e8e8);
+  border-radius: 8px;
+}
+
+/* ── Left: File Tree Panel ──────────────────────────────────────────── */
+
+.fileTreePanel {
+  width: 260px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--qwenpaw-color-border, #e8e8e8);
+  background: var(--qwenpaw-color-bg-layout, #fafafa);
+  overflow: hidden;
+}
+
+.fileTreeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px 8px;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid var(--qwenpaw-color-border, #e8e8e8);
+}
+
+.fileTreeHeaderActions {
+  display: flex;
+  gap: 4px;
+}
+
+.fileTreeContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.treeNode {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px 4px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 4px;
+  margin: 0 4px;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: var(--qwenpaw-color-bg-text-hover, rgba(0, 0, 0, 0.04));
+  }
+
+  &.active {
+    background: var(--qwenpaw-color-primary-bg, #fff7e6);
+    color: var(--qwenpaw-color-primary, #ff7f16);
+  }
+}
+
+.treeNodeIcon {
+  margin-right: 6px;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.treeNodeName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folderToggle {
+  margin-right: 4px;
+  font-size: 10px;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.folderToggleOpen {
+  transform: rotate(90deg);
+}
+
+/* ── Center: Editor Panel ───────────────────────────────────────────── */
+
+.editorPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.editorTabs {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--qwenpaw-color-border, #e8e8e8);
+  background: var(--qwenpaw-color-bg-layout, #fafafa);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.editorTab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  border-right: 1px solid var(--qwenpaw-color-border, #e8e8e8);
+  white-space: nowrap;
+  transition: background-color 0.15s;
+  user-select: none;
+
+  &:hover {
+    background: var(--qwenpaw-color-bg-text-hover, rgba(0, 0, 0, 0.04));
+  }
+
+  &.activeTab {
+    background: var(--qwenpaw-color-bg-container, #fff);
+    border-bottom: 2px solid var(--qwenpaw-color-primary, #ff7f16);
+  }
+}
+
+.tabClose {
+  font-size: 12px;
+  opacity: 0.5;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 1px;
+
+  &:hover {
+    opacity: 1;
+    background: var(--qwenpaw-color-bg-text-hover, rgba(0, 0, 0, 0.08));
+  }
+}
+
+.editorContent {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.editorTextarea {
+  flex: 1;
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 16px;
+  font-family: "SF Mono", "Monaco", "Menlo", "Consolas", "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  background: var(--qwenpaw-color-bg-container, #fff);
+  color: var(--qwenpaw-color-text, #1f1f1f);
+  tab-size: 2;
+}
+
+.editorFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--qwenpaw-color-text-description, #999);
+  border-top: 1px solid var(--qwenpaw-color-border, #e8e8e8);
+  background: var(--qwenpaw-color-bg-layout, #fafafa);
+}
+
+.editorEmpty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--qwenpaw-color-text-description, #999);
+  font-size: 14px;
+  background: var(--qwenpaw-color-bg-container, #fff);
+}
+
+.modified {
+  color: var(--qwenpaw-color-warning, #faad14);
+}
+
+/* ── Right: Chat Panel ──────────────────────────────────────────────── */
+
+.chatPanel {
+  width: 420px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--qwenpaw-color-border, #e8e8e8);
+  overflow: hidden;
+  height: 100%;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid var(--qwenpaw-color-border, #e8e8e8);
+  background: var(--qwenpaw-color-bg-layout, #fafafa);
+  flex-shrink: 0;
+}
+
+.chatPanelBody {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Slash-command suggestion labels (mirrors Chat page) ────────────── */
+
+.suggestionLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggestionCommand {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--qwenpaw-color-primary, #ff7f16);
+  font-family: monospace;
+}
+
+.suggestionDescription {
+  font-size: 12px;
+  color: var(--qwenpaw-color-text-description, #999);
+}
+
+/* ── Upload zone ────────────────────────────────────────────────────── */
+
+.uploadZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+  padding: 40px;
+}
+
+.uploadHint {
+  color: var(--qwenpaw-color-text-description, #999);
+  font-size: 14px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.searchInput {
+  max-width: 240px;
+}
+
+/* ── Upload Card (first card in grid) ───────────────────────────────── */
+
+.uploadCard {
+  :global {
+    .ant-card-body,
+    .qwenpaw-spark-card-wrapper {
+      padding: 0 !important;
+      height: 100%;
+    }
+  }
+}
+
+.uploadCardBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 16px;
+  height: 100%;
+  min-height: 200px;
+  gap: 8px;
+}
+
+.uploadCardIcon {
+  font-size: 36px;
+  color: var(--qwenpaw-color-primary, #ff7f16);
+  opacity: 0.7;
+}
+
+.uploadCardTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--qwenpaw-color-text, #1f1f1f);
+}
+
+.uploadCardHint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--qwenpaw-color-text-description, #999);
+  line-height: 1.5;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+
+.panelResizer {
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: var(--qwenpaw-color-primary, #ff7f16);
+  }
+}
+
+/* ── Save indicator ─────────────────────────────────────────────────── */
+.saveActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

@@ -6,7 +6,7 @@ import { XMarkdown } from "@ant-design/x-markdown";
 import { useTranslation } from "react-i18next";
 import { useAppMessage } from "../../../../hooks/useAppMessage";
 import { stripFrontmatter } from "../../../../utils/markdown";
-import { mermaidComponents } from "../../../../components/MermaidCodeBlock";
+import { AiGenModal } from "./AiGenModal";
 import styles from "../index.module.less";
 
 interface FileEditorProps {
@@ -31,6 +31,7 @@ export const FileEditor: React.FC<FileEditorProps> = ({
   const { t } = useTranslation();
   const { message } = useAppMessage();
   const [showMarkdown, setShowMarkdown] = useState(true);
+  const [aiGenOpen, setAiGenOpen] = useState(false);
 
   const isMarkdownFile = selectedFile?.filename.endsWith(".md") || false;
   const markdownContent = useMemo(
@@ -73,6 +74,16 @@ export const FileEditor: React.FC<FileEditorProps> = ({
                 <div className={styles.filePath}>{selectedFile.path}</div>
               </div>
               <div className={styles.buttonGroup}>
+                {isMarkdownFile && (
+                  <Button
+                    size="small"
+                    type="default"
+                    onClick={() => setAiGenOpen(true)}
+                    className={styles.aiGenButton}
+                  >
+                    ✦ {t("workspace.aiGen.button")}
+                  </Button>
+                )}
                 <Button
                   size="small"
                   onClick={onReset}
@@ -122,7 +133,6 @@ export const FileEditor: React.FC<FileEditorProps> = ({
                 <XMarkdown
                   content={markdownContent}
                   className={styles.markdownViewer}
-                  components={mermaidComponents}
                   dompurifyConfig={{
                     ADD_TAGS: ["pre", "code"],
                     ADD_ATTR: [
@@ -148,6 +158,19 @@ export const FileEditor: React.FC<FileEditorProps> = ({
         )}
         <p className={styles.attribution}>{t("workspace.attribution")}</p>
       </Card>
+
+      {selectedFile && (
+        <AiGenModal
+          open={aiGenOpen}
+          onClose={() => setAiGenOpen(false)}
+          fileName={selectedFile.filename}
+          fileContent={fileContent}
+          onApply={(content) => {
+            onContentChange(content);
+            setShowMarkdown(false);
+          }}
+        />
+      )}
     </div>
   );
 };

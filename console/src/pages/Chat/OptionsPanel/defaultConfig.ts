@@ -7,7 +7,7 @@ const defaultConfig = {
     prefix: "qwenpaw",
     leftHeader: {
       logo: "",
-      title: "Work with QwenPaw",
+      title: "历史会话",
     },
   },
   sender: {
@@ -44,8 +44,10 @@ class ChatConfigProvider {
     return t("chat.description");
   }
 
-  getPrompts(t: TFunction): Array<{ value: string }> {
-    return [{ value: t("chat.prompt1") }, { value: t("chat.prompt2") }];
+  getPrompts(): Array<{ value: string }> {
+    // Quick-prompts disabled
+    return [];
+    // return [{ value: t("chat.prompt1") }, { value: t("chat.prompt2") }];
   }
 
   getConfig(t: TFunction) {
@@ -59,7 +61,7 @@ class ChatConfigProvider {
         ...defaultConfig.welcome,
         greeting: this.getGreeting(t),
         description: this.getDescription(t),
-        prompts: this.getPrompts(t),
+        prompts: this.getPrompts(),
       },
     };
   }

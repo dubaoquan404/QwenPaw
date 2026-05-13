@@ -1763,6 +1763,12 @@ class ProviderManager:  # pylint: disable=too-many-public-methods
                 if not builtin.freeze_url:
                     builtin.base_url = provider.base_url
                 builtin.api_key = provider.api_key
+                # Filter out built-in models the user has deleted.
+                # The stored JSON's models list is the source of truth.
+                stored_model_ids = {m.id for m in provider.models}
+                builtin.models = [
+                    m for m in builtin.models if m.id in stored_model_ids
+                ]
                 builtin_model_ids = {m.id for m in builtin.models}
                 builtin.extra_models = [
                     m

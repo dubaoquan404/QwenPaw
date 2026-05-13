@@ -21,6 +21,15 @@ if (typeof window !== "undefined") {
     if (msg.includes(":first-child") || msg.includes("pseudo class")) {
       return;
     }
+    if (msg.includes("findDOMNode is deprecated")) {
+      return;
+    }
+    if (msg.includes("flushSync was called from inside a lifecycle")) {
+      return;
+    }
+    if (msg.includes("Each child in a list should have a unique")) {
+      return;
+    }
     originalError.apply(console, args as []);
   };
 
@@ -29,7 +38,9 @@ if (typeof window !== "undefined") {
     if (
       msg.includes(":first-child") ||
       msg.includes("pseudo class") ||
-      msg.includes("potentially unsafe")
+      msg.includes("potentially unsafe") ||
+      msg.includes("overlayClassName") ||
+      msg.includes("overlayStyle")
     ) {
       return;
     }

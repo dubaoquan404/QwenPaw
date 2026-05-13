@@ -590,4 +590,23 @@ export const skillApi = {
         suggested_name: string;
       }>;
     }>,
+
+  downloadSkillZip: async (skillName: string): Promise<void> => {
+    const url = getApiUrl(`/skills/${encodeURIComponent(skillName)}/download-zip`);
+    const headers = buildAuthHeaders();
+    const response = await fetch(url, { method: "GET", headers });
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || `Request failed: ${response.status}`);
+    }
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = objectUrl;
+    anchor.download = `${skillName}.zip`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    URL.revokeObjectURL(objectUrl);
+  },
 };

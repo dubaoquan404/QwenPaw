@@ -154,13 +154,7 @@ export function AgentTable({
             size="middle"
             icon={<EditOutlined />}
             onClick={() => onEdit(record)}
-            disabled={record.id === "default"}
-            style={record.id === "default" ? disabledStyle : iconStyle}
-            title={
-              record.id === "default"
-                ? t("agent.defaultNotEditable")
-                : undefined
-            }
+            style={iconStyle}
           />
           <Popconfirm
             title={
@@ -174,7 +168,6 @@ export function AgentTable({
                 : t("agent.enableConfirmDesc")
             }
             onConfirm={() => onToggle(record.id, record.enabled)}
-            disabled={record.id === "default"}
             okText={t("common.confirm")}
             cancelText={t("common.cancel")}
           >
@@ -182,13 +175,7 @@ export function AgentTable({
               type="text"
               size="middle"
               icon={record.enabled ? <EyeOff size={14} /> : <Eye size={14} />}
-              disabled={record.id === "default"}
-              style={record.id === "default" ? disabledStyle : iconStyle}
-              title={
-                record.id === "default"
-                  ? t("agent.defaultNotDisablable")
-                  : undefined
-              }
+              style={iconStyle}
             />
           </Popconfirm>
           <Popconfirm

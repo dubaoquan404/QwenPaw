@@ -1,0 +1,170 @@
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+.embedWrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  /* Remove any body margins that could cause scrollbars in iframe */
+  :global(body) {
+    margin: 0;
+    overflow: hidden;
+  }
+
+  /* Hide all header elements except the right side (loading bridge).
+     This covers: left header container, the built-in session-list toggle
+     button (rendered as a sibling of the left header when multiple=true),
+     and any other non-right elements the library may inject. */
+  :global {
+    [class*="chat-anywhere-default-header"] > *:not([class*="header-right"]) {
+      display: none !important;
+    }
+
+    /* Also explicitly hide the session sidebar toggle button the library adds
+       when session.multiple=true — it can appear as an icon-only button outside
+       the left/right header wrappers. */
+    [class*="chat-anywhere-session-list-toggle"],
+    [class*="chat-anywhere-default-header-toggle"],
+    [class*="chat-anywhere-header-session-toggle"],
+    [class*="chat-anywhere-layout-sider-trigger"],
+    [class*="chat-anywhere-sider-trigger"],
+    [class*="chat-anywhere-collapse"],
+    [class*="chat-anywhere-default-layout-sider"] {
+      display: none !important;
+    }
+
+    /* Make the header bar minimal — only show the right side if needed */
+    [class*="chat-anywhere-default-header"] {
+      padding-left: 8px !important;
+    }
+  }
+}
+
+/* Chat messages scrollable area */
+.chatMessagesArea {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  :global {
+    [class*="chat-anywhere-default-header-right"] {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  :global(.dark-mode) & {
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+
+  :global(.dark-mode) & {
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+}
+
+/* Agent description in welcome screen */
+.welcomeDescription {
+  text-align: left;
+
+  :global(ul),
+  :global(ol) {
+    display: block;
+    padding-left: 1.5em;
+    margin: 0.3em 0;
+    list-style: disc;
+  }
+
+  :global(li) {
+    display: list-item;
+    margin: 0.15em 0;
+  }
+
+  :global(p) {
+    display: block;
+    margin: 0.2em 0;
+  }
+}
+
+/* Slash-command suggestion labels */
+.suggestionLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+  line-height: 1.4;
+}
+
+.suggestionCommand {
+  flex: 0 0 88px;
+  color: #ff7f16;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.suggestionDescription {
+  flex: 1;
+  min-width: 0;
+  color: rgba(0, 0, 0, 0.45);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+:global(.dark-mode) {
+  .suggestionCommand {
+    color: #ff7f16;
+  }
+
+  .suggestionDescription {
+    color: rgba(255, 255, 255, 0.65);
+  }
+}
+

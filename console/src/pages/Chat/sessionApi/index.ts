@@ -351,35 +351,6 @@ class SessionApi implements IAgentScopeRuntimeWebUISessionAPI {
   private sessionList: IAgentScopeRuntimeWebUISession[] = [];
 
   /**
-   * Pending resolvers waiting for a specific session's realId.
-   * Used to replace setTimeout-based busy-wait with event-driven notification.
-   */
-  private realIdResolvers: Map<string, Array<() => void>> = new Map();
-
-  /** Notify any pending waiters that a session's realId has been resolved. */
-  private notifyRealIdResolved(sessionId: string): void {
-    const resolvers = this.realIdResolvers.get(sessionId);
-    if (resolvers) {
-      this.realIdResolvers.delete(sessionId);
-      for (const resolve of resolvers) resolve();
-    }
-  }
-
-  /** Wait until a session's realId is available (set by updateSession). */
-  private waitForRealId(sessionId: string): Promise<void> {
-    const session = this.sessionList.find((x) => x.id === sessionId) as
-      | ExtendedSession
-      | undefined;
-    if (session?.realId) return Promise.resolve();
-
-    return new Promise<void>((resolve) => {
-      const existing = this.realIdResolvers.get(sessionId) || [];
-      existing.push(resolve);
-      this.realIdResolvers.set(sessionId, existing);
-    });
-  }
-
-  /**
    * When set, getSessionList will move the matching session to the front on the first call,
    * so the library's useMount auto-selects it instead of always defaulting to sessions[0].
    * Cleared after first use.
@@ -580,7 +551,28 @@ class SessionApi implements IAgentScopeRuntimeWebUISessionAPI {
     return [...this.sessionList];
   }
 
+  /**
+   * When set to true, the next getSessionList call returns an empty list,
+   * forcing a fresh session. Used by embed mode to always start a new chat.
+   * Automatically resets after first use.
+   */
+  forceNewSession = false;
+
+  /**
+   * When set (EmbedChat only), new sessions are created with this value
+   * prepended to the timestamp ID, e.g. "user123_1734567890".
+   * This ensures each end-user in embed mode gets isolated chat history.
+   * Set to null to restore default (plain timestamp) behaviour.
+   */
+  embedUserId: string | null = null;
+
   async getSessionList() {
+    if (this.forceNewSession) {
+      this.forceNewSession = false;
+      this.sessionList = [];
+      this.sessionListRequest = null;
+      return [];
+    }
     if (this.sessionListRequest) return this.sessionListRequest;
 
     this.sessionListRequest = (async () => {
@@ -666,7 +658,19 @@ class SessionApi implements IAgentScopeRuntimeWebUISessionAPI {
 
       // Pure local session (not yet sent to backend): wait until updateSession
       // resolves the realId, then fetch history with the real UUID.
-      await this.waitForRealId(sessionId);
+      await new Promise<void>((resolve) => {
+        const check = () => {
+          const s = this.sessionList.find((x) => x.id === sessionId) as
+            | ExtendedSession
+            | undefined;
+          if (s?.realId) {
+            resolve();
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        setTimeout(check, 100);
+      });
 
       const refreshed = this.sessionList.find((s) => s.id === sessionId) as
         | ExtendedSession
@@ -718,18 +722,39 @@ class SessionApi implements IAgentScopeRuntimeWebUISessionAPI {
       const existing = this.sessionList[index] as ExtendedSession;
       if (isLocalTimestamp(existing.id) && !existing.realId) {
         const tempId = existing.id;
+<<<<<<< Updated upstream
         this.getSessionList().then(() => this.resolveAndNotify(tempId));
       }
     } else {
       const tempId = session.id!;
       await this.getSessionList().then(() => this.resolveAndNotify(tempId));
+=======
+        this.getSessionList().then(() => {
+          const { list, realId } = resolveRealId(this.sessionList, tempId);
+          this.sessionList = list;
+          if (realId) {
+            this.onSessionIdResolved?.(tempId, realId);
+          }
+        });
+      }
+    } else {
+      const tempId = session.id!;
+      await this.getSessionList().then(() => {
+        const { list, realId } = resolveRealId(this.sessionList, tempId);
+        this.sessionList = list;
+        if (realId) {
+          this.onSessionIdResolved?.(tempId, realId);
+        }
+      });
+>>>>>>> Stashed changes
     }
 
     return [...this.sessionList];
   }
 
   async createSession(session: Partial<IAgentScopeRuntimeWebUISession>) {
-    session.id = Date.now().toString();
+    const baseId = Date.now().toString();
+    session.id = baseId;
 
     const extended: ExtendedSession = {
       ...session,

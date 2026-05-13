@@ -10,12 +10,14 @@ import {
   Empty,
   Spin,
 } from "antd";
-import { CheckOutlined } from "@ant-design/icons";
+import { CheckOutlined, LockOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
+import { Tooltip } from "antd";
+import { useNavigate } from "react-router-dom";
 import type { AgentSummary } from "@/api/types/agents";
 import type { ProviderInfo } from "@/api/types/provider";
 import { getAgentDisplayName } from "@/utils/agentDisplayName";
-import type { PoolSkillSpec } from "@/api/types/skill";
+import type { PoolSkillSpec, SkillSpec } from "@/api/types/skill";
 import { skillApi } from "@/api/modules/skill";
 import { providerApi } from "@/api/modules/provider";
 import { providerIcon } from "../../Models/components/providerIcon";
@@ -51,8 +53,10 @@ export function AgentModal({
   onCancel,
 }: AgentModalProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [poolSkills, setPoolSkills] = useState<PoolSkillSpec[]>([]);
   const [installedSkills, setInstalledSkills] = useState<string[]>([]);
+  const [workspaceOnlySkills, setWorkspaceOnlySkills] = useState<SkillSpec[]>([]);
   const [loadingSkills, setLoadingSkills] = useState(false);
   const [providers, setProviders] = useState<ProviderInfo[]>([]);
   const [loadingProviders, setLoadingProviders] = useState(false);
@@ -105,16 +109,20 @@ export function AgentModal({
 
     Promise.all([fetchPool, fetchInstalled])
       .then(([pool, workspaceSkills]) => {
-        const poolSkillNames = new Set(pool.map((skill) => skill.name));
-        const installedSkills = workspaceSkills
-          .filter((skill) => poolSkillNames.has(skill.name))
-          .map((skill) => skill.name);
+        const poolSkillNamesSet = new Set(pool.map((skill) => skill.name));
+        // All workspace skills are considered installed (regardless of pool membership)
+        const allInstalledSkillNames = workspaceSkills.map((skill) => skill.name);
+        // Custom skills only in the workspace (not in pool) — already installed
+        const workspaceOnly = workspaceSkills.filter(
+          (skill) => !poolSkillNamesSet.has(skill.name),
+        );
 
         setPoolSkills(pool);
-        setInstalledSkills(installedSkills);
-        onInstalledSkillsLoaded(installedSkills);
+        setInstalledSkills(allInstalledSkillNames);
+        setWorkspaceOnlySkills(workspaceOnly);
+        onInstalledSkillsLoaded(allInstalledSkillNames);
         if (editingAgent) {
-          onSelectedSkillsChange(installedSkills);
+          onSelectedSkillsChange(allInstalledSkillNames);
         } else {
           onSelectedSkillsChange([]);
         }
@@ -137,9 +145,6 @@ export function AgentModal({
   };
 
   const toggleSkill = (name: string) => {
-    const isInstalled = editingAgent && installedSkills.includes(name);
-    if (isInstalled) return;
-
     if (selectedSkills.includes(name)) {
       onSelectedSkillsChange(selectedSkills.filter((s) => s !== name));
     } else {
@@ -162,6 +167,7 @@ export function AgentModal({
   };
 
   const handleSelectNone = () => {
+    // Deselect only new additions; keep already-installed ones selected
     onSelectedSkillsChange(editingAgent ? [...installedSkills] : []);
   };
 
@@ -324,35 +330,113 @@ export function AgentModal({
           <div style={{ textAlign: "center", padding: "16px 0" }}>
             <Spin size="small" />
           </div>
-        ) : poolSkills.length === 0 ? (
+        ) : poolSkills.length === 0 && workspaceOnlySkills.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={t("agent.noPoolSkills")}
           />
         ) : (
-          <div className={styles.pickerGrid}>
-            {poolSkills.map((skill) => {
-              const selected = selectedSkills.includes(skill.name);
-              const isInstalled =
-                !!editingAgent && installedSkills.includes(skill.name);
-              return (
-                <div
-                  key={skill.name}
-                  className={`${styles.pickerCard} ${
-                    selected ? styles.pickerCardSelected : ""
-                  } ${isInstalled ? styles.pickerCardDisabled : ""}`}
-                  onClick={() => toggleSkill(skill.name)}
-                >
-                  {selected && (
-                    <span className={styles.pickerCheck}>
-                      <CheckOutlined />
-                    </span>
-                  )}
-                  <div className={styles.pickerCardTitle}>{skill.name}</div>
+          <>
+            {poolSkills.length > 0 && (
+              <div className={styles.pickerGrid}>
+                {poolSkills.map((skill) => {
+                  const selected = selectedSkills.includes(skill.name);
+                  const isInstalled =
+                    !!editingAgent && installedSkills.includes(skill.name);
+                  return (
+                    <Tooltip
+                      key={skill.name}
+                      title={
+                        isInstalled && !selected
+                          ? t("agent.skillInstalledNote")
+                          : undefined
+                      }
+                      placement="top"
+                    >
+                      <div
+                        className={`${styles.pickerCard} ${
+                          selected
+                            ? isInstalled
+                              ? styles.pickerCardInstalled
+                              : styles.pickerCardSelected
+                            : ""
+                        }`}
+                        onClick={() => toggleSkill(skill.name)}
+                      >
+                        {selected && (
+                          <span
+                            className={`${styles.pickerCheck} ${
+                              isInstalled ? styles.pickerCheckInstalled : ""
+                            }`}
+                          >
+                            {isInstalled ? (
+                              <LockOutlined />
+                            ) : (
+                              <CheckOutlined />
+                            )}
+                          </span>
+                        )}
+                        <div className={styles.pickerCardTitle}>
+                          {skill.name}
+                        </div>
+                        {isInstalled && selected && (
+                          <div className={styles.pickerCardBadge}>
+                            {t("agent.installed")}
+                          </div>
+                        )}
+                      </div>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            )}
+
+            {editingAgent && workspaceOnlySkills.length > 0 && (
+              <div style={{ marginTop: poolSkills.length > 0 ? 12 : 0 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <Text
+                    type="secondary"
+                    style={{ fontSize: 12 }}
+                  >
+                    {t("agent.workspaceCustomSkills")}
+                  </Text>
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<ArrowRightOutlined />}
+                    style={{ fontSize: 12, padding: 0, height: "auto" }}
+                    onClick={() => {
+                      onCancel();
+                      navigate("/skills");
+                    }}
+                  >
+                    {t("agent.manageSkills")}
+                  </Button>
                 </div>
-              );
-            })}
-          </div>
+                <div className={styles.pickerGrid}>
+                  {workspaceOnlySkills.map((skill) => (
+                    <Tooltip
+                      key={skill.name}
+                      title={t("agent.customSkillNote")}
+                      placement="top"
+                    >
+                      <div
+                        className={`${styles.pickerCard} ${styles.pickerCardInstalled}`}
+                      >
+                        <span className={`${styles.pickerCheck} ${styles.pickerCheckInstalled}`}>
+                          <LockOutlined />
+                        </span>
+                        <div className={styles.pickerCardTitle}>{skill.name}</div>
+                        <div className={styles.pickerCardBadge}>
+                          {t("agent.installed")}
+                        </div>
+                      </div>
+                    </Tooltip>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </Modal>

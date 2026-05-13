@@ -30,7 +30,6 @@ function SecurityPage() {
     builtinRules,
     customRules,
     toggleRule,
-    toggleAutoDeny,
     deleteCustomRule,
     openAddRule,
     openEditRule,
@@ -106,7 +105,6 @@ function SecurityPage() {
                   toolOptions={toolOptions}
                   mergedRules={mergedRules}
                   toggleRule={toggleRule}
-                  toggleAutoDeny={toggleAutoDeny}
                   onPreviewRule={setPreviewRule}
                   onEditRule={openEditRule}
                   onDeleteRule={deleteCustomRule}

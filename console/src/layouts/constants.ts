@@ -24,6 +24,7 @@ export const KEY_TO_PATH: Record<string, string> = {
   "cron-jobs": "/cron-jobs",
   heartbeat: "/heartbeat",
   skills: "/skills",
+  "skill-debugger": "/skill-debugger",
   "skill-pool": "/skill-pool",
   tools: "/tools",
   mcp: "/mcp",
@@ -39,7 +40,11 @@ export const KEY_TO_PATH: Record<string, string> = {
   "voice-transcription": "/voice-transcription",
   debug: "/debug",
   backups: "/backups",
+<<<<<<< Updated upstream
   "plugin-manager": "/plugin-manager",
+=======
+  embed: "/embed",
+>>>>>>> Stashed changes
 };
 
 export const KEY_TO_LABEL: Record<string, string> = {
@@ -49,6 +54,7 @@ export const KEY_TO_LABEL: Record<string, string> = {
   "cron-jobs": "nav.cronJobs",
   heartbeat: "nav.heartbeat",
   skills: "nav.skills",
+  "skill-debugger": "nav.skillDebugger",
   "skill-pool": "nav.skillPool",
   tools: "nav.tools",
   mcp: "nav.mcp",
@@ -62,6 +68,7 @@ export const KEY_TO_LABEL: Record<string, string> = {
   agents: "nav.agents",
   debug: "nav.debug",
   backups: "nav.backups",
+  embed: "nav.embed",
 };
 
 // ── URL helpers ───────────────────────────────────────────────────────────

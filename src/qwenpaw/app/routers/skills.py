@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Body, File, HTTPException, Request, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 from agentscope_runtime.engine.schemas.exception import (
     AppBaseException,
@@ -1541,3 +1541,35 @@ async def delete_skill_config_endpoint(
     if not updated:
         raise HTTPException(status_code=404, detail="Skill not found")
     return {"cleared": True}
+
+
+@router.get("/{skill_name}/download-zip")
+async def download_skill_zip(
+    request: Request,
+    skill_name: str,
+) -> StreamingResponse:
+    """Package one workspace skill as a zip and stream it to the client."""
+    import io
+    import zipfile as _zipfile
+
+    workspace_dir = await _request_workspace_dir(request)
+    skill_dir = get_workspace_skills_dir(workspace_dir) / skill_name
+    if not skill_dir.is_dir():
+        raise HTTPException(status_code=404, detail="Skill not found")
+
+    buf = io.BytesIO()
+    with _zipfile.ZipFile(buf, mode="w", compression=_zipfile.ZIP_DEFLATED) as zf:
+        for entry in sorted(skill_dir.rglob("*")):
+            if entry.is_file():
+                arcname = skill_name + "/" + entry.relative_to(skill_dir).as_posix()
+                zf.write(entry, arcname)
+    buf.seek(0)
+
+    filename = f"{skill_name}.zip"
+    return StreamingResponse(
+        buf,
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+        },
+    )

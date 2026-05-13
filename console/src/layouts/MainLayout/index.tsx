@@ -20,6 +20,9 @@ const CronJobsPage = lazyImportWithRetry("../../pages/Control/CronJobs");
 const HeartbeatPage = lazyImportWithRetry("../../pages/Control/Heartbeat");
 const AgentConfigPage = lazyImportWithRetry("../../pages/Agent/Config");
 const SkillsPage = lazyImportWithRetry("../../pages/Agent/Skills");
+const SkillDebuggerPage = lazyImportWithRetry(
+  "../../pages/Agent/SkillDebugger",
+);
 const SkillPoolPage = lazyImportWithRetry("../../pages/Settings/SkillPool");
 const ToolsPage = lazyImportWithRetry("../../pages/Agent/Tools");
 const WorkspacePage = lazyImportWithRetry("../../pages/Agent/Workspace");
@@ -38,9 +41,13 @@ const VoiceTranscriptionPage = lazyImportWithRetry(
 const AgentsPage = lazyImportWithRetry("../../pages/Settings/Agents");
 const DebugPage = lazyImportWithRetry("../../pages/Settings/Debug");
 const BackupsPage = lazyImportWithRetry("../../pages/Settings/Backups");
+<<<<<<< Updated upstream
 const PluginManagerPage = lazyImportWithRetry(
   "../../pages/Settings/PluginManager",
 );
+=======
+const EmbedPage = lazyImportWithRetry("../../pages/Settings/Embed");
+>>>>>>> Stashed changes
 
 const { Content } = Layout;
 
@@ -51,6 +58,7 @@ const pathToKey: Record<string, string> = {
   "/cron-jobs": "cron-jobs",
   "/heartbeat": "heartbeat",
   "/skills": "skills",
+  "/skill-debugger": "skill-debugger",
   "/skill-pool": "skill-pool",
   "/tools": "tools",
   "/mcp": "mcp",
@@ -66,7 +74,11 @@ const pathToKey: Record<string, string> = {
   "/voice-transcription": "voice-transcription",
   "/debug": "debug",
   "/backups": "backups",
+<<<<<<< Updated upstream
   "/plugin-manager": "plugin-manager",
+=======
+  "/embed": "embed",
+>>>>>>> Stashed changes
 };
 
 export default function MainLayout() {
@@ -111,6 +123,10 @@ export default function MainLayout() {
                   <Route path="/cron-jobs" element={<CronJobsPage />} />
                   <Route path="/heartbeat" element={<HeartbeatPage />} />
                   <Route path="/skills" element={<SkillsPage />} />
+                  <Route
+                    path="/skill-debugger"
+                    element={<SkillDebuggerPage />}
+                  />
                   <Route path="/skill-pool" element={<SkillPoolPage />} />
                   <Route path="/tools" element={<ToolsPage />} />
                   <Route path="/mcp" element={<MCPPage />} />
@@ -130,10 +146,14 @@ export default function MainLayout() {
                   />
                   <Route path="/debug" element={<DebugPage />} />
                   <Route path="/backups" element={<BackupsPage />} />
+<<<<<<< Updated upstream
                   <Route
                     path="/plugin-manager"
                     element={<PluginManagerPage />}
                   />
+=======
+                  <Route path="/embed" element={<EmbedPage />} />
+>>>>>>> Stashed changes
 
                   {/* Plugin routes — dynamically injected at runtime */}
                   {pluginRoutes.map((route) => (

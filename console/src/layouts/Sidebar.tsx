@@ -216,6 +216,12 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
       label: t("nav.skills"),
     },
     {
+      key: "skill-debugger",
+      icon: <SparkDebugLine size={18} />,
+      path: "/skill-debugger",
+      label: t("nav.skillDebugger", "Skill Debugger"),
+    },
+    {
       key: "skill-pool",
       icon: <SparkOtherLine size={18} />,
       path: "/skill-pool",
@@ -300,10 +306,17 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
       label: t("nav.debug", "Debug"),
     },
     {
+<<<<<<< Updated upstream
       key: "plugin-manager",
       icon: <Package size={18} />,
       path: "/plugin-manager",
       label: t("nav.pluginManager", "Plugin Manager"),
+=======
+      key: "embed",
+      icon: <SparkExitFullscreenLine size={18} />,
+      path: "/embed",
+      label: t("nav.embed"),
+>>>>>>> Stashed changes
     },
     // Append plugin nav items dynamically
     ...pluginRoutes.map((route) => ({
@@ -356,6 +369,11 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           key: "skills",
           label: collapsed ? null : t("nav.skills"),
           icon: <SparkMagicWandLine size={16} />,
+        },
+        {
+          key: "skill-debugger",
+          label: collapsed ? null : t("nav.skillDebugger", "Skill Debugger"),
+          icon: <SparkDebugLine size={16} />,
         },
         {
           key: "tools",
@@ -439,9 +457,15 @@ export default function Sidebar({ selectedKey }: SidebarProps) {
           icon: <SparkDebugLine size={16} />,
         },
         {
+<<<<<<< Updated upstream
           key: "plugin-manager",
           label: collapsed ? null : t("nav.pluginManager", "Plugin Manager"),
           icon: <Package size={16} />,
+=======
+          key: "embed",
+          label: collapsed ? null : t("nav.embed"),
+          icon: <SparkExitFullscreenLine size={16} />,
+>>>>>>> Stashed changes
         },
       ],
     },

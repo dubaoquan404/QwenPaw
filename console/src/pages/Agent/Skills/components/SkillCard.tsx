@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Button, Checkbox, Tooltip } from "@agentscope-ai/design";
+import { Card, Button, Checkbox, Tooltip, message } from "@agentscope-ai/design";
 import {
   CalendarFilled,
   FileTextFilled,
@@ -12,7 +12,9 @@ import {
   CodeFilled,
   EyeOutlined,
   EyeInvisibleOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
+import { skillApi } from "../../../../api/modules/skill";
 import dayjs from "dayjs";
 import type { SkillSpec } from "../../../../api/types";
 import { useTranslation } from "react-i18next";
@@ -135,6 +137,20 @@ export const SkillCard = React.memo(function SkillCard({
   const { t } = useTranslation();
   const batchMode = selected !== undefined;
   const [isHover, setIsHover] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (downloading) return;
+    setDownloading(true);
+    try {
+      await skillApi.downloadSkillZip(skill.name);
+    } catch {
+      message.error(t("skills.downloadFailed"));
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handleToggleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -270,6 +286,16 @@ export const SkillCard = React.memo(function SkillCard({
             icon={skill.enabled ? <EyeInvisibleOutlined /> : <EyeOutlined />}
           >
             {skill.enabled ? t("common.disable") : t("common.enable")}
+          </Button>
+          <Button
+            type="default"
+            className={styles.actionButton}
+            disabled={batchMode}
+            loading={downloading}
+            onClick={handleDownloadClick}
+            icon={<DownloadOutlined />}
+          >
+            {t("common.download")}
           </Button>
           {onDelete && (
             <Button

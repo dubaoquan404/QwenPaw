@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Form, Modal } from "@agentscope-ai/design";
 import type { PoolSkillSpec, SkillSpec } from "../../../api/types";
 import type { SkillDrawerFormValues } from "./components";
@@ -77,7 +77,6 @@ export function useSkillsPage() {
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [editingSkill, setEditingSkill] = useState<SkillSpec | null>(null);
   const [form] = Form.useForm<SkillDrawerFormValues>();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [poolSkills, setPoolSkills] = useState<PoolSkillSpec[]>([]);
   const [poolModal, setPoolModal] = useState<"upload" | "download" | null>(
     null,
@@ -164,14 +163,9 @@ export function useSkillsPage() {
 
   const closePoolModal = () => setPoolModal(null);
 
-  const handleUploadClick = () => fileInputRef.current?.click();
-
   // ── File upload ─────────────────────────────────────────────────────────
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = "";
+  const handleUploadFile = async (file: File) => {
     if (!file.name.toLowerCase().endsWith(".zip")) {
       message.warning(t("skills.zipOnly"));
       return;
@@ -694,7 +688,6 @@ export function useSkillsPage() {
     setImportModalOpen,
     editingSkill,
     form,
-    fileInputRef,
     poolModal,
     setPoolModal,
     selectedSkills,
@@ -718,8 +711,7 @@ export function useSkillsPage() {
     handleBatchEnable,
     handleBatchDisable,
     handleBatchDelete,
-    handleUploadClick,
-    handleFileChange,
+    handleUploadFile,
     handleConfirmImport,
     closeImportModal,
     closePoolModal,

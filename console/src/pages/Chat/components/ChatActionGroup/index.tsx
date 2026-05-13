@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IconButton } from "@agentscope-ai/design";
 import {
   SparkHistoryLine,
@@ -11,6 +11,8 @@ import { Flex, Tooltip } from "antd";
 import ChatSessionDrawer from "../ChatSessionDrawer";
 import ChatSearchPanel from "../ChatSearchPanel";
 import PlanPanel from "../../../../components/PlanPanel";
+import { planApi } from "../../../../api/modules/plan";
+import { useAgentStore } from "../../../../stores/agentStore";
 
 const PlanIcon = () => (
   <svg
@@ -28,18 +30,27 @@ const PlanIcon = () => (
   </svg>
 );
 
-interface ChatActionGroupProps {
-  planEnabled?: boolean;
-}
-
-const ChatActionGroup: React.FC<ChatActionGroupProps> = ({
-  planEnabled = false,
-}) => {
+const ChatActionGroup: React.FC = () => {
   const { t } = useTranslation();
   const [historyOpen, setHistoryOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [planOpen, setPlanOpen] = useState(false);
+  const [planEnabled, setPlanEnabled] = useState(false);
   const { createSession } = useChatAnywhereSessions();
+  const { selectedAgent } = useAgentStore();
+
+  useEffect(() => {
+    let cancelled = false;
+    planApi
+      .getPlanConfig()
+      .then((cfg) => {
+        if (!cancelled) setPlanEnabled(cfg.enabled);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedAgent]);
 
   return (
     <Flex gap={8} align="center">
