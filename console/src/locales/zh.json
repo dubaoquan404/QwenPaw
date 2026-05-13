@@ -65,9 +65,7 @@
     "debug": "日志",
     "plugins": "插件",
     "backups": "备份",
-<<<<<<< Updated upstream
-    "pluginManager": "插件管理"
-=======
+    "pluginManager": "插件管理",
     "embed": "嵌入集成"
   },
   "embed": {
@@ -97,7 +95,6 @@
     "darkModeDesc": "嵌入页面默认使用深色主题",
     "showSessionBtn": "显示会话按钮",
     "showSessionBtnDesc": "在嵌入页面左上角显示会话历史切换按钮"
->>>>>>> Stashed changes
   },
   "debug": {
     "title": "日志",

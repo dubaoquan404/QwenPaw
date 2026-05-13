@@ -65,9 +65,7 @@
     "debug": "Debug",
     "plugins": "Plugins",
     "backups": "Backups",
-<<<<<<< Updated upstream
-    "pluginManager": "Plugin Manager"
-=======
+    "pluginManager": "Plugin Manager",
     "embed": "Embed & Integrate"
   },
   "embed": {
@@ -97,7 +95,6 @@
     "darkModeDesc": "Embed page uses dark theme by default",
     "showSessionBtn": "Show Session Button",
     "showSessionBtnDesc": "Show session history toggle button in the top-left corner of the embedded page"
->>>>>>> Stashed changes
   },
   "debug": {
     "title": "Debug",

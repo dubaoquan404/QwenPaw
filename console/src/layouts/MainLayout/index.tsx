@@ -41,13 +41,7 @@ const VoiceTranscriptionPage = lazyImportWithRetry(
 const AgentsPage = lazyImportWithRetry("../../pages/Settings/Agents");
 const DebugPage = lazyImportWithRetry("../../pages/Settings/Debug");
 const BackupsPage = lazyImportWithRetry("../../pages/Settings/Backups");
-<<<<<<< Updated upstream
-const PluginManagerPage = lazyImportWithRetry(
-  "../../pages/Settings/PluginManager",
-);
-=======
 const EmbedPage = lazyImportWithRetry("../../pages/Settings/Embed");
->>>>>>> Stashed changes
 
 const { Content } = Layout;
 
@@ -74,11 +68,7 @@ const pathToKey: Record<string, string> = {
   "/voice-transcription": "voice-transcription",
   "/debug": "debug",
   "/backups": "backups",
-<<<<<<< Updated upstream
-  "/plugin-manager": "plugin-manager",
-=======
   "/embed": "embed",
->>>>>>> Stashed changes
 };
 
 export default function MainLayout() {
@@ -146,14 +136,7 @@ export default function MainLayout() {
                   />
                   <Route path="/debug" element={<DebugPage />} />
                   <Route path="/backups" element={<BackupsPage />} />
-<<<<<<< Updated upstream
-                  <Route
-                    path="/plugin-manager"
-                    element={<PluginManagerPage />}
-                  />
-=======
                   <Route path="/embed" element={<EmbedPage />} />
->>>>>>> Stashed changes
 
                   {/* Plugin routes — dynamically injected at runtime */}
                   {pluginRoutes.map((route) => (

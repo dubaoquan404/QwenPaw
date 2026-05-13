@@ -374,5 +374,4 @@ class Provider(ProviderInfo, ABC):
             freeze_url=self.freeze_url,
             require_api_key=self.require_api_key,
             generate_kwargs=self.generate_kwargs,
-            meta=self.meta or {},
         )

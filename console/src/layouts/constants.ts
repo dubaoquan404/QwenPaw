@@ -40,11 +40,7 @@ export const KEY_TO_PATH: Record<string, string> = {
   "voice-transcription": "/voice-transcription",
   debug: "/debug",
   backups: "/backups",
-<<<<<<< Updated upstream
-  "plugin-manager": "/plugin-manager",
-=======
   embed: "/embed",
->>>>>>> Stashed changes
 };
 
 export const KEY_TO_LABEL: Record<string, string> = {

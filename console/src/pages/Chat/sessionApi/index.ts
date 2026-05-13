@@ -722,31 +722,11 @@ class SessionApi implements IAgentScopeRuntimeWebUISessionAPI {
       const existing = this.sessionList[index] as ExtendedSession;
       if (isLocalTimestamp(existing.id) && !existing.realId) {
         const tempId = existing.id;
-<<<<<<< Updated upstream
         this.getSessionList().then(() => this.resolveAndNotify(tempId));
       }
     } else {
       const tempId = session.id!;
       await this.getSessionList().then(() => this.resolveAndNotify(tempId));
-=======
-        this.getSessionList().then(() => {
-          const { list, realId } = resolveRealId(this.sessionList, tempId);
-          this.sessionList = list;
-          if (realId) {
-            this.onSessionIdResolved?.(tempId, realId);
-          }
-        });
-      }
-    } else {
-      const tempId = session.id!;
-      await this.getSessionList().then(() => {
-        const { list, realId } = resolveRealId(this.sessionList, tempId);
-        this.sessionList = list;
-        if (realId) {
-          this.onSessionIdResolved?.(tempId, realId);
-        }
-      });
->>>>>>> Stashed changes
     }
 
     return [...this.sessionList];

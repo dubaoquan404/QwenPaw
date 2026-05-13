@@ -1,6 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { PlusOutlined } from "@ant-design/icons";
-import { Button } from "@agentscope-ai/design";
 import {
   SkillCard,
   SkillDrawer,
@@ -10,6 +8,7 @@ import {
   SkillsToolbar,
   SkillListItem,
   UploadSkillCard,
+  CreateSkillCard,
 } from "./components";
 import { PageHeader } from "@/components/PageHeader";
 import { useSkillsPage } from "./useSkillsPage";
@@ -124,24 +123,12 @@ function SkillsPage() {
           <span className={styles.loadingText}>{t("common.loading")}</span>
         </div>
       ) : skills.length === 0 ? (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyStateBadge}>
-            {t("skills.emptyStateBadge")}
-          </div>
-          <h2 className={styles.emptyStateTitle}>
-            {t("skills.emptyStateTitle")}
-          </h2>
-          <p className={styles.emptyStateText}>{t("skills.emptyStateText")}</p>
-          <div className={styles.emptyStateActions}>
-            <Button
-              type="primary"
-              className={styles.primaryActionButton}
-              onClick={handleCreate}
-              icon={<PlusOutlined />}
-            >
-              {t("skills.emptyStateCreate")}
-            </Button>
-          </div>
+        <div className={styles.skillsGrid}>
+          <UploadSkillCard
+            uploading={uploading}
+            onFileSelect={handleUploadFile}
+          />
+          <CreateSkillCard onClick={handleCreate} />
         </div>
       ) : sortedSkills.length === 0 ? (
         <div className={styles.noSearchResults}>
